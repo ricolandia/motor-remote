@@ -1,0 +1,26 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0a;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+}
+
+#terminal {
+  width: 100vw;
+  height: 100vh;
+  max-width: 900px;
+  max-height: 700px;
+}
+
+.xterm {
+  padding: 8px;
+  height: 100%;
+}

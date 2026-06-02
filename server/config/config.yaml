@@ -1,0 +1,24 @@
+server:
+  ssh_port: 2222
+  http_port: 8080
+  host: "0.0.0.0"
+
+database:
+  path: "./data/game.db"
+  driver: "sqlite3"
+
+game:
+  max_actions_free: 50
+  tiers:
+    aventureiro:
+      max_chars: 1
+      ssh: false
+    heroi:
+      max_chars: 3
+      ssh: true
+    lorde:
+      max_chars: 10
+      ssh: true
+    mestre:
+      max_chars: -1
+      ssh: true

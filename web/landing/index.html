@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REMOTE — RPG Interativo Multiverso</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0a0a0a; color: #c8c8c8;
+      font-family: 'Courier New', monospace;
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+    .container { max-width: 700px; margin: 0 auto; padding: 40px 20px; flex: 1; }
+    .logo { font-size: 48px; color: #4ec9b0; font-weight: bold; margin-bottom: 8px; }
+    .subtitle { font-size: 16px; color: #888; margin-bottom: 40px; }
+    .desc { line-height: 1.8; margin-bottom: 32px; color: #aaa; }
+    .btn {
+      display: inline-block; background: #4ec9b0; color: #0a0a0a;
+      padding: 14px 32px; border-radius: 6px; font-weight: bold;
+      font-size: 18px; text-decoration: none; margin-right: 12px;
+    }
+    .btn:hover { background: #3da892; }
+    .btn-sec {
+      display: inline-block; background: #1a1a1a; color: #4ec9b0;
+      padding: 14px 32px; border-radius: 6px; font-weight: bold;
+      font-size: 18px; text-decoration: none; border: 1px solid #333;
+    }
+    .btn-sec:hover { background: #222; }
+    .features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 40px 0; }
+    .feature { background: #111; border: 1px solid #222; border-radius: 8px; padding: 20px; }
+    .feature h3 { color: #d7ba7d; font-size: 14px; margin-bottom: 8px; }
+    .feature p { font-size: 13px; color: #888; }
+    .footer { text-align: center; padding: 20px; color: #555; font-size: 13px; }
+    @media (max-width: 600px) {
+      .features { grid-template-columns: 1fr; }
+      .logo { font-size: 36px; }
+      .btn, .btn-sec { display: block; margin: 12px 0; text-align: center; }
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">REMOTE</div>
+    <div class="subtitle">RPG Interativo Multi-Universo</div>
+    <div class="desc">
+      Viaje entre dimensões em uma aventura de texto com combate tático, 
+      encontros com NPCs e inteligência artificial gerando histórias infinitas.
+      Tudo no seu terminal ou navegador.
+    </div>
+    <a href="/play" class="btn">Jogar</a>
+    <span class="btn-sec" style="cursor:pointer;" id="btn-solicitar">Solicitar acesso</span>
+    <a href="/manual" class="btn-sec">Manual</a>
+    <a href="/assinar" class="btn-sec">Apoiar</a>
+    <div id="convite-landing" class="hidden" style="background:#111; border:1px solid #333; border-radius:8px; padding:24px; margin-top:16px;">
+      <p style="color:#aaa; line-height:1.6;">
+        As contas sao criadas por convite.<br><br>
+        Envie um e-mail para <strong style="color:#4ec9b0;">contato@rizomatico.org</strong>
+        solicitando acesso que criaremos sua conta.
+      </p>
+      <button onclick="document.getElementById('convite-landing').classList.add('hidden')" 
+        style="background:#333; color:#fff; border:none; padding:10px 20px; border-radius:4px; margin-top:16px; cursor:pointer;">Fechar</button>
+    </div>
+    <script>
+      document.getElementById('btn-solicitar').onclick = function(e) {
+        e.preventDefault();
+        var el = document.getElementById('convite-landing');
+        el.classList.toggle('hidden');
+      };
+    </script>
+
+    <div class="features">
+      <div class="feature">
+        <h3>✦ O Amuleto de Sylphara</h3>
+        <p>Fantasia — Um limpador de copos, um amuleto falante, uma fada, um dragão. Nem tudo é o que parece.</p>
+      </div>
+      <div class="feature">
+        <h3>✦ Leviatã</h3>
+        <p>Sci-Fi — Uma nave colossal surge no sistema solar. Explore, descubra, decida o destino da humanidade.</p>
+      </div>
+      <div class="feature">
+        <h3>✦ O Tempo Congelado</h3>
+        <p>Horror — O mundo parou. Criaturas se alimentam. Só você pode se mover. Sobreviva e avise.</p>
+      </div>
+      <div class="feature">
+        <h3>✦ Projeto Cascos</h3>
+        <p>Pós-Apocalipse — Um selo, uma bússola, um laboratório. A cura para a radiação pode ser pior que a doença.</p>
+      </div>
+    </div>
+  </div>
+  <div class="footer">REMOTE Engine &mdash; 2026</div>
+</body>
+</html>

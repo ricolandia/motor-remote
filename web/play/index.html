@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>REMOTE — Jogar</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0a0a0a; color: #c8c8c8;
+      font-family: 'Courier New', 'Consolas', monospace;
+      font-size: 14px; line-height: 1.5;
+      min-height: 100vh; display: flex; justify-content: center;
+    }
+    #game-container {
+      width: 100%; max-width: 720px;
+      display: flex; flex-direction: column;
+      min-height: 100vh;
+      border-left: 1px solid #1a1a1a;
+      border-right: 1px solid #1a1a1a;
+    }
+    #header {
+      background: #111; border-bottom: 1px solid #222;
+      padding: 8px 16px; display: flex; justify-content: space-between;
+      align-items: center; flex-shrink: 0;
+    }
+    #header .logo { color:#4ec9b0; font-weight:bold; font-size:16px; }
+    #header .status { color:#666; font-size:12px; }
+    #output {
+      flex: 1; overflow-y: auto; padding: 16px;
+      white-space: pre-wrap; word-wrap: break-word;
+      font-size: 13px;
+    }
+
+    /* Choice buttons */
+    #choices {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 8px 12px; background: #0d0d0d;
+      border-top: 1px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+    .choice-btn {
+      background: #1a2a1a; color: #4ec9b0;
+      border: 1px solid #2a4a2a; border-radius: 6px;
+      padding: 10px 16px; font-size: 14px;
+      font-family: inherit; cursor: pointer;
+      flex: 1 1 auto; min-width: 60px;
+      text-align: center; transition: all 0.15s;
+    }
+    .choice-btn:hover, .choice-btn:active {
+      background: #2a4a2a; border-color: #4ec9b0;
+    }
+
+    /* Action bar */
+    #actions {
+      display: flex; gap: 4px;
+      padding: 6px 12px; background: #0d0d0d;
+      border-top: 1px solid #1a1a1a;
+      flex-shrink: 0;
+    }
+    .action-btn {
+      background: #1a1a1a; color: #888;
+      border: 1px solid #2a2a2a; border-radius: 4px;
+      padding: 8px 12px; font-size: 12px;
+      font-family: inherit; cursor: pointer;
+      flex: 1; text-align: center; transition: all 0.15s;
+    }
+    .action-btn:hover, .action-btn:active {
+      color: #4ec9b0; border-color: #4ec9b0;
+    }
+    .action-btn.highlight { color: #d7ba7d; border-color: #4a3a1a; }
+
+    /* Text input (collapsible) */
+    #input-area {
+      background: #111; border-top: 1px solid #222;
+      padding: 6px 12px; display: flex; gap: 6px;
+      flex-shrink: 0;
+    }
+    #input-area input {
+      flex: 1; background: #1a1a1a; border: 1px solid #333;
+      color: #c8c8c8; padding: 8px 12px; border-radius: 4px;
+      font-family: inherit; font-size: 14px; outline: none;
+    }
+    #input-area input:focus { border-color: #4ec9b0; caret-color: #4ec9b0; }
+    #input-area .send-btn {
+      background: #4ec9b0; color: #0a0a0a; border: none;
+      padding: 8px 16px; border-radius: 4px; font-weight: bold;
+      font-size: 14px; cursor: pointer;
+    }
+    #input-area .send-btn:hover { background: #3da892; }
+    #input-area.hidden { display: none; }
+
+    /* Login overlay */
+    #login-overlay {
+      position: fixed; top:0; left:0; right:0; bottom:0;
+      background: #0a0a0a; display: flex; align-items: center;
+      justify-content: center; z-index: 10;
+    }
+    #login-box {
+      background: #111; border: 1px solid #333; border-radius: 8px;
+      padding: 32px; width: 320px; max-width: 90%;
+    }
+    #login-box h2 { color:#4ec9b0; margin-bottom: 20px; font-size:18px; }
+    #login-box label { display:block; margin: 10px 0 4px; color:#888; font-size:13px; }
+    #login-box input {
+      width:100%; background:#1a1a1a; border:1px solid #333; color:#c8c8c8;
+      padding:10px; border-radius:4px; font-family:inherit; font-size:14px;
+    }
+    #login-box .btn-login {
+      width:100%; margin-top:16px; background:#4ec9b0; color:#0a0a0a;
+      border:none; padding:12px; border-radius:4px; font-weight:bold;
+      font-size:14px; cursor:pointer;
+    }
+    #login-box .btn-login:hover { background:#3da892; }
+    #login-box .error { color:#d16969; font-size:13px; margin-top:8px; }
+    #login-box .switch { color:#569cd6; font-size:13px; margin-top:12px; cursor:pointer; text-align:center; }
+    .hidden { display:none !important; }
+  </style>
+</head>
+<body>
+      <div id="login-overlay">
+    <div id="login-box">
+      <h2>REMOTE</h2>
+      <div id="login-form">
+        <label>Usuario</label>
+        <input type="text" id="login-user" autocomplete="username">
+        <label>Senha</label>
+        <input type="password" id="login-pass" autocomplete="current-password">
+        <button class="btn-login" onclick="doLogin()">Entrar</button>
+        <div id="login-error" class="error"></div>
+        <div class="switch" onclick="showInvite()">Nao tem conta? Solicite um convite</div>
+      </div>
+      <div id="invite-modal" class="hidden">
+        <p style="color:#aaa; line-height:1.6; margin-top:16px;">
+          As contas sao criadas por convite.<br><br>
+          Envie um e-mail para <strong style="color:#4ec9b0;">contato@rizomatico.org</strong>
+          solicitando acesso que criaremos sua conta.
+        </p>
+        <button class="btn-login" onclick="showLogin()" style="margin-top:20px;">Voltar ao login</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-container">
+    <div id="header">
+      <span class="logo">REMOTE</span>
+      <span class="status" id="status-bar"></span>
+    </div>
+    <div id="output"></div>
+    <div id="choices"></div>
+    <div id="actions">
+      <button class="action-btn" onclick="sendNum(1)">1</button>
+      <button class="action-btn" onclick="sendNum(2)">2</button>
+      <button class="action-btn" onclick="sendNum(3)">3</button>
+      <button class="action-btn" onclick="sendNum(4)">4</button>
+      <button class="action-btn" onclick="sendNum(5)">5</button>
+      <button class="action-btn" onclick="sendNum(6)">6</button>
+      <button class="action-btn" onclick="sendNum(7)">7</button>
+      <button class="action-btn highlight" onclick="sendCmd('menu')">Menu</button>
+      <button class="action-btn highlight" onclick="sendCmd('i')">Inv</button>
+      <button class="action-btn highlight" onclick="sendCmd('ajuda')">?</button>
+      <button class="action-btn" onclick="toggleInput()">⌨</button>
+    </div>
+    <div id="input-area">
+      <input type="text" id="cmd-input" placeholder="Digite..." autofocus>
+      <button class="send-btn" onclick="sendCmd(document.getElementById('cmd-input').value)">Ok</button>
+    </div>
+  </div>
+
+  <script>
+    let token = '';
+
+    function showLogin() {
+      document.getElementById('invite-modal').classList.add('hidden');
+      document.getElementById('login-form').classList.remove('hidden');
+    }
+    function showInvite() {
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('invite-modal').classList.remove('hidden');
+    }
+
+    async function api(path, data) {
+      const r = await fetch(path, {
+        method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      });
+      return r.json();
+    }
+
+    function appendOutput(text) {
+      const out = document.getElementById('output');
+      out.textContent += text;
+      out.scrollTop = out.scrollHeight;
+    }
+
+    function parseChoices(text) {
+      const choices = [];
+      const lines = text.split('\n');
+      for (const line of lines) {
+        const m = line.match(/^\s*(\d+)\)\s(.+)/);
+        if (m) choices.push({ num: parseInt(m[1]), text: m[2] });
+      }
+      return choices;
+    }
+
+    function updateChoices(text) {
+      const container = document.getElementById('choices');
+      const parsed = parseChoices(text);
+      if (parsed.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+      let html = '';
+      for (const c of parsed) {
+        html += `<button class="choice-btn" onclick="sendNum(${c.num})">${c.num}) ${c.text}</button>`;
+      }
+      container.innerHTML = html;
+    }
+
+    function handleOutput(text, redraw) {
+      const out = document.getElementById('output');
+      if (redraw) {
+        out.textContent = text;
+      } else {
+        out.textContent += text + '\n';
+      }
+      out.scrollTop = out.scrollHeight;
+      updateChoices(text);
+    }
+
+    async function sendCmd(input) {
+      if (!token) return;
+      document.getElementById('cmd-input').value = '';
+      const r = await api('/api/command', {token, input});
+      if (r.output) {
+        handleOutput(r.output, r.redraw);
+      }
+      if (!r.continue) {
+        token = '';
+        document.getElementById('login-overlay').classList.remove('hidden');
+      }
+    }
+
+    function sendNum(n) { sendCmd(String(n)); }
+
+    function toggleInput() {
+      const el = document.getElementById('input-area');
+      el.classList.toggle('hidden');
+      if (!el.classList.contains('hidden')) {
+        document.getElementById('cmd-input').focus();
+      }
+    }
+
+    async function doLogin() {
+      const user = document.getElementById('login-user').value;
+      const pass = document.getElementById('login-pass').value;
+      document.getElementById('login-error').textContent = '';
+      const d = await api('/api/login', {username: user, password: pass});
+      if (d.status === 'ok') {
+        token = d.token;
+        document.getElementById('login-overlay').classList.add('hidden');
+        const r0 = await api('/api/command', {token, input: ''});
+        if (r0.output) {
+          handleOutput(r0.output, true);
+        }
+        if (d.world) {
+          document.getElementById('status-bar').textContent = d.world;
+        }
+      } else {
+        document.getElementById('login-error').textContent = d || 'Erro no login';
+      }
+    }
+
+
+
+    document.getElementById('login-pass').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doLogin();
+    });
+    document.getElementById('cmd-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        sendCmd(document.getElementById('cmd-input').value);
+      }
+    });
+  </script>
+</body>
+</html>

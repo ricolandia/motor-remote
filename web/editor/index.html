@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REMOTE — Editor de Histórias</title>
+<script src="https://cdn.jsdelivr.net/npm/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0a0a; color:#c8c8c8; font-family:'Courier New',monospace; font-size:13px; height:100vh; display:flex; flex-direction:column; }
+#header { background:#111; border-bottom:1px solid #222; padding:8px 16px; display:flex; align-items:center; gap:12px; flex-shrink:0; }
+#header .logo { color:#4ec9b0; font-weight:bold; font-size:16px; }
+#header select { background:#1a1a1a; color:#c8c8c8; border:1px solid #333; padding:4px 8px; border-radius:4px; font-family:inherit; }
+#header .info { color:#666; font-size:12px; margin-left:auto; }
+#main { display:flex; flex:1; overflow:hidden; }
+#graph-panel { flex:1; position:relative; border-right:1px solid #222; }
+#graph-panel #graph { width:100%; height:100%; }
+
+/* Botoes de navegacao vis-network */
+.vis-button { background:#2a2a2a !important; color:#c8c8c8 !important;
+  border:1px solid #444 !important; border-radius:4px !important;
+  font-size:16px !important; padding:6px 10px !important; box-shadow:none !important;
+  margin:4px !important; min-width:32px !important; text-align:center !important; }
+.vis-button:hover { background:#4ec9b0 !important; color:#0a0a0a !important;
+  border-color:#4ec9b0 !important; }
+.vis-button:active { background:#3da892 !important; }
+.vis-tooltip { background:#1a1a1a !important; border:1px solid #444 !important;
+  color:#c8c8c8 !important; font-family:'Courier New',monospace !important;
+  font-size:12px !important; border-radius:4px !important; padding:8px !important; }
+.vis-close { display:none !important; }
+
+#form-panel { width:420px; overflow-y:auto; padding:12px; background:#0d0d0d; flex-shrink:0; }
+#form-panel h3 { color:#569cd6; font-size:13px; margin-bottom:8px; }
+#form-panel label { display:block; color:#888; font-size:11px; margin-top:8px; }
+#form-panel input, #form-panel select, #form-panel textarea {
+  width:100%; background:#1a1a1a; border:1px solid #333; color:#c8c8c8;
+  padding:6px 8px; border-radius:3px; font-family:inherit; font-size:12px; margin-top:2px; }
+#form-panel textarea { min-height:80px; resize:vertical; }
+#form-panel .choice-row { background:#111; border:1px solid #222; border-radius:4px; padding:8px; margin:6px 0; }
+#form-panel .choice-row input { margin:2px 0; font-size:11px; }
+.choice-row .rm { float:right; color:#d16969; cursor:pointer; font-size:16px; line-height:16px; }
+.btn { background:#1a1a1a; color:#888; border:1px solid #333; padding:6px 14px; border-radius:4px;
+  font-weight:bold; font-size:12px; cursor:pointer; margin:8px 4px 0 0; }
+.btn:hover { color:#4ec9b0; border-color:#4ec9b0; }
+.btn-primary { background:#4ec9b0; color:#0a0a0a; border:none; }
+.btn-primary:hover { background:#3da892; }
+#search-box { margin:8px 0; display:flex; gap:4px; }
+#search-box input { flex:1; }
+.legend { display:flex; gap:12px; margin:4px 0; flex-wrap:wrap; font-size:11px; }
+.legend span { display:flex; align-items:center; gap:4px; }
+.legend .dot { width:10px; height:10px; border-radius:50%; display:inline-block; }
+#status { color:#888; font-size:11px; padding:4px; }
+</style>
+</head>
+<body>
+<div id="header">
+  <span class="logo">REMOTE Editor</span>
+  <select id="world-select" onchange="loadGraph()">
+    <option value="fantasia">Fantasia</option>
+    <option value="scifi">Sci-Fi</option>
+    <option value="horror">Horror</option>
+    <option value="posapocalipse">Pós-Apocalipse</option>
+  </select>
+  <span class="info" id="node-count"></span>
+  <span id="status"></span>
+</div>
+<div id="main">
+  <div id="graph-panel"><div id="graph"></div></div>
+  <div id="form-panel">
+    <div id="search-box">
+      <input type="text" id="search-input" placeholder="Buscar nó por ID..." onkeydown="if(event.key==='Enter')searchNode()">
+      <button class="btn" onclick="searchNode()">Ir</button>
+    </div>
+    <div id="form-content">
+      <p style="color:#555;margin-top:40px;text-align:center;">Clique em um nó no grafo<br>para editar seus detalhes.</p>
+    </div>
+    <div class="legend">
+      <span><span class="dot" style="background:#569cd6"></span> hist</span>
+      <span><span class="dot" style="background:#d16969"></span> comb</span>
+      <span><span class="dot" style="background:#6a9955"></span> dial</span>
+      <span><span class="dot" style="background:#d7ba7d"></span> event</span>
+      <span><span class="dot" style="background:#c586c0"></span> enig</span>
+    </div>
+    <button class="btn btn-primary" onclick="refreshGraph()">🔄 Atualizar Grafo</button>
+    <button class="btn" onclick="exportJSON()">💾 Exportar</button>
+  </div>
+</div>
+
+<script>
+let network = null, graphData = null, nodeDetails = {}, selectedNodeId = null, currentNode = null;
+let allVisNodes = [], allVisEdges = [];
+
+const nodeColors = {
+  historia:'#569cd6', combate:'#d16969', dialogo:'#6a9955',
+  evento:'#d7ba7d', enigma:'#c586c0', comercio:'#c8c800'
+};
+
+async function loadGraph() {
+  const world = document.getElementById('world-select').value;
+  document.getElementById('status').textContent = 'Carregando...';
+  const r = await fetch(`/api/story-graph?world=${world}`);
+  const data = await r.json();
+  graphData = data;
+  nodeDetails = {};
+  Object.keys(data.details).forEach(k => { nodeDetails[k] = data.details[k]; });
+  
+  document.getElementById('node-count').textContent = `Nós: ${data.meta.total}`;
+  document.getElementById('status').textContent = '';
+  renderGraph(data.nodes, data.edges, data.meta.start_node);
+}
+
+function renderGraph(nodes, edges, startNodeId) {
+  const container = document.getElementById('graph');
+  
+  allVisNodes = nodes.map(n => ({
+    id: n.id, label: n.label.length>12 ? n.label.slice(0,12) : n.label,
+    group: n.group, title: (n.title||'').slice(0,100),
+    shape: 'box', opacity: 0.35, borderWidth: 1,
+    widthConstraint: { minimum:80, maximum:140 },
+    margin: { top:6, bottom:6, left:8, right:8 },
+    font: { color:'#c8c8c8', size:11, face:'Courier New' },
+    color: { background: nodeColors[n.group]||'#666', border:'#555',
+      highlight: { background: nodeColors[n.group]||'#666', border:'#4ec9b0' } }
+  }));
+
+  allVisEdges = edges.map(e => ({
+    from: e.from, to: e.to, label: e.label||'',
+    font: { size:9, color:'#666', face:'Courier New', strokeWidth:0 },
+    color: { color:'rgba(200,200,200,0.2)', highlight:'#4ec9b0', opacity:0.35 },
+    arrows: 'to', width: 1.0,
+    selectionWidth: 2
+  }));
+
+  const options = {
+    physics: { enabled: false },
+    edges: { smooth: { type:'curvedCW', roundness:0.1 } },
+    layout: { hierarchical: { direction:'UD', sortMethod:'directed', nodeSpacing:140, levelSeparation:180 } },
+    interaction: { hover:true, tooltipDelay:200, navigationButtons:true, keyboard:true },
+    groups: Object.fromEntries(
+      Object.entries(nodeColors).map(([k,v]) => [
+        k, { color: { background:v, border:'#555', highlight:{ background:v, border:'#4ec9b0' } } }
+      ])
+    )
+  };
+
+  if (network) network.destroy();
+  network = new vis.Network(container, { nodes: allVisNodes, edges: allVisEdges }, options);
+
+  network.on('selectNode', function(params) { highlightConnections(params.nodes[0]); });
+  network.on('deselectNode', function() { resetHighlight(); });
+  network.on('click', function(params) {
+    if (params.nodes.length > 0) { selectNode(params.nodes[0]); }
+  });
+
+  // Focus on start node
+  if (startNodeId && network) {
+    setTimeout(() => {
+      try {
+        network.selectNodes([startNodeId]);
+        network.focus(startNodeId, { scale: 1.8, animation: false });
+        selectNode(startNodeId);
+      } catch(e) {}
+    }, 300);
+  }
+}
+
+function highlightConnections(nodeId) {
+  if (!network) return;
+  
+  // Find connected nodes
+  const connectedIds = new Set([nodeId]);
+  
+  // Incoming (nodes that point TO this node)
+  allVisEdges.forEach(e => {
+    if (e.to === nodeId) connectedIds.add(e.from);
+    if (e.from === nodeId) connectedIds.add(e.to);
+  });
+  
+  network.body.nodes.forEach((node, id) => {
+    if (connectedIds.has(id)) {
+      node.setOptions({ opacity: 1.0, borderWidth: 2 });
+    } else {
+      node.setOptions({ opacity: 0.08, borderWidth: 1 });
+    }
+  });
+  
+  network.body.edges.forEach((edge, id) => {
+    const conn = connectedIds.has(edge.fromId) && connectedIds.has(edge.toId);
+    edge.setOptions({
+      color: { opacity: conn ? 0.95 : 0.06, color: conn ? '#4ec9b0' : '#fff' }
+    });
+  });
+}
+
+function resetHighlight() {
+  if (!network) return;
+  network.body.nodes.forEach(node => {
+    node.setOptions({ opacity: 0.35, borderWidth: 1 });
+  });
+  network.body.edges.forEach(edge => {
+    edge.setOptions({ color: { opacity: 0.35, color: 'rgba(200,200,200,0.2)' } });
+  });
+  selectedNodeId = null;
+  currentNode = null;
+  document.getElementById('form-content').innerHTML =
+    '<p style="color:#555;margin-top:40px;text-align:center;">Clique em um nó no grafo<br>para editar seus detalhes.</p>';
+}
+
+function selectNode(nodeId) {
+  selectedNodeId = nodeId;
+  const detail = nodeDetails[nodeId];
+  if (!detail) return;
+  currentNode = JSON.parse(JSON.stringify(detail));
+  renderForm();
+  if (network) network.focus(nodeId, { scale:1.5, animation:true });
+}
+
+function renderForm() {
+  if (!currentNode) return;
+  const c = currentNode;
+  let html = `<h3>Nó: ${c.id}</h3>`;
+  html += `<label>Tipo</label><select id="edit-tipo">
+    ${['historia','combate','dialogo','evento','enigma','comercio'].map(t =>
+      `<option value="${t}" ${t===c.tipo?'selected':''}>${t}</option>`).join('')}</select>`;
+  html += `<label>Sala ID</label><input id="edit-sala" value="${c.sala_id||''}">`;
+  html += `<label>XP</label><input id="edit-xp" type="number" value="${c.xp||0}">`;
+  html += `<label>Efeito</label><input id="edit-efeito" value="${c.efeito||''}" placeholder="hp:+5,gold:+10,item:espada">`;
+  html += `<label>Texto</label><textarea id="edit-texto" rows="5">${(c.texto||'').replace(/</g,'&lt;')}</textarea>`;
+  html += `<label>Escolhas (${(c.escolhas||[]).length})</label>`;
+  (c.escolhas||[]).forEach((esc, i) => {
+    const t = esc.texto_escolha||esc.texto||'';
+    const d = esc.node_destino||'';
+    const cd = typeof esc.condicao==='string' ? esc.condicao : (esc.condicao?esc.condicao.String:'')||'';
+    html += `<div class="choice-row">
+      <span class="rm" onclick="removeChoice(${i})">&times;</span>
+      <input class="choice-text" value="${t.replace(/"/g,'&quot;')}" placeholder="Texto">
+      <input class="choice-dest" value="${d}" placeholder="Destino" style="width:45%">
+      <input class="choice-cond" value="${cd}" placeholder="Condição" style="width:45%">
+    </div>`;
+  });
+  html += `<button class="btn" onclick="addChoice()">+ Add escolha</button>`;
+  html += `<div style="margin-top:12px"><button class="btn btn-primary" onclick="applyChanges()">Aplicar</button></div>`;
+  document.getElementById('form-content').innerHTML = html;
+}
+
+function applyChanges() {
+  if (!currentNode) return;
+  const c = currentNode;
+  c.tipo = document.getElementById('edit-tipo')?.value || c.tipo;
+  c.sala_id = document.getElementById('edit-sala')?.value || '';
+  c.xp = parseInt(document.getElementById('edit-xp')?.value) || 0;
+  c.efeito = document.getElementById('edit-efeito')?.value || '';
+  c.texto = document.getElementById('edit-texto')?.value || '';
+  const texts = document.querySelectorAll('.choice-text');
+  const dests = document.querySelectorAll('.choice-dest');
+  const conds = document.querySelectorAll('.choice-cond');
+  c.escolhas = Array.from(texts).map((el, i) => ({
+    texto_escolha: el.value, node_destino: dests[i]?.value || '',
+    ordem: i + 1, condicao: conds[i]?.value || ''
+  }));
+  nodeDetails[c.id] = JSON.parse(JSON.stringify(c));
+  document.getElementById('status').textContent = 'Nó atualizado. Use "Atualizar Grafo" para refletir.';
+}
+
+function refreshGraph() {
+  const nodes = Object.values(nodeDetails).map(n => ({
+    id: n.id, label: n.id.length>12 ? n.id.slice(0,12) : n.id,
+    group: n.tipo, title: (n.texto||'').slice(0,80)
+  }));
+  const edges = []; const seen = new Set();
+  Object.values(nodeDetails).forEach(n => {
+    (n.escolhas||[]).forEach(e => {
+      const key = `${n.id}|${e.node_destino}`;
+      if (!seen.has(key)) { seen.add(key); edges.push({ from:n.id, to:e.node_destino, label:String(e.ordem||1) }); }
+    });
+  });
+  renderGraph(nodes, edges);
+  document.getElementById('status').textContent = 'Grafo atualizado!';
+  document.getElementById('node-count').textContent = `Nós: ${nodes.length}`;
+}
+
+function addChoice() {
+  if (!currentNode) return;
+  if (!currentNode.escolhas) currentNode.escolhas = [];
+  currentNode.escolhas.push({ texto_escolha:'', node_destino:'', ordem:currentNode.escolhas.length+1, condicao:'' });
+  renderForm();
+}
+
+function removeChoice(i) {
+  if (!currentNode||!currentNode.escolhas) return;
+  currentNode.escolhas.splice(i,1);
+  currentNode.escolhas.forEach((e,idx) => e.ordem=idx+1);
+  renderForm();
+}
+
+function searchNode() {
+  const q = document.getElementById('search-input').value.trim();
+  if (!q||!network) return;
+  if (nodeDetails[q]) { selectNode(q); highlightConnections(q); return; }
+  const found = Object.keys(nodeDetails).filter(id => id.includes(q));
+  if (found.length>0) { selectNode(found[0]); highlightConnections(found[0]); }
+  else { document.getElementById('status').textContent = `Nó "${q}" nao encontrado.`; }
+}
+
+function exportJSON() {
+  const world = document.getElementById('world-select').value;
+  const nodes = Object.values(nodeDetails).map(n => ({
+    id:n.id, sala_id:n.sala_id||'', tipo:n.tipo, texto:n.texto||'',
+    tags:n.tags||[], xp:n.xp||0, efeito:n.efeito||'',
+    escolhas:(n.escolhas||[]).map(e => ({
+      texto:e.texto_escolha||e.texto||'', node_destino:e.node_destino||'',
+      ordem:e.ordem||1, condicao:''
+    }))
+  }));
+  const blob = new Blob([JSON.stringify(nodes,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${world}_editado.json`;
+  a.click();
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.key==='s') { e.preventDefault(); applyChanges(); }
+  if (e.key==='Escape') { network.selectNodes([]); resetHighlight(); }
+});
+
+loadGraph();
+</script>
+</body>
+</html>

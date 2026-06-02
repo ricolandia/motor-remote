@@ -1,0 +1,15 @@
+services:
+  remote-engine:
+    build: .
+    ports:
+      - "8081:8080"
+      - "2223:2222"
+    volumes:
+      - remote_data:/data
+    environment:
+      - DB_PATH=/data/game.db
+      - STATIC_DIR=/web/static
+    restart: unless-stopped
+
+volumes:
+  remote_data:

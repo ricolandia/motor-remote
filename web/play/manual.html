@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>REMOTE — Manual do Jogador</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      background: #0a0a0a; color: #c8c8c8;
+      font-family: 'Courier New', 'Consolas', monospace;
+      font-size: 14px; line-height: 1.8;
+      display: flex; justify-content: center;
+    }
+    .container {
+      max-width: 720px; width: 100%; padding: 32px 20px 60px;
+      border-left: 1px solid #1a1a1a; border-right: 1px solid #1a1a1a;
+      min-height: 100vh;
+    }
+    h1 { color: #4ec9b0; font-size: 24px; margin-bottom: 8px; }
+    h2 { color: #569cd6; font-size: 18px; margin: 32px 0 12px; border-bottom: 1px solid #222; padding-bottom: 4px; }
+    h3 { color: #d7ba7d; font-size: 15px; margin: 20px 0 8px; }
+    p { margin-bottom: 12px; color: #aaa; }
+    ul { margin: 8px 0 16px 20px; }
+    li { margin-bottom: 6px; color: #aaa; }
+    code { background: #1a1a1a; color: #d7ba7d; padding: 1px 6px; border-radius: 3px; font-size: 13px; }
+    .cmd { color: #4ec9b0; }
+    .highlight { color: #d7ba7d; }
+    .box {
+      background: #111; border: 1px solid #333; border-radius: 6px;
+      padding: 16px; margin: 16px 0;
+    }
+    .box-title { color: #569cd6; font-weight: bold; margin-bottom: 8px; font-size: 13px; }
+    .box p, .box li { font-size: 13px; }
+    table { width:100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+    th, td { border: 1px solid #222; padding: 8px 12px; text-align: left; }
+    th { background: #111; color: #569cd6; }
+    td { color: #aaa; }
+    a { color: #4ec9b0; }
+    .tag { display: inline-block; background: #1a1a1a; color: #888; padding: 2px 8px; border-radius: 3px; font-size: 12px; margin: 2px; }
+    .header-links { margin-bottom: 24px; font-size: 13px; }
+    .header-links a { margin-right: 16px; color: #4ec9b0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>REMOTE — Manual do Jogador</h1>
+    <div class="header-links">
+      <a href="/">Home</a>
+      <a href="/play">Jogar</a>
+      <a href="#basico">Basico</a>
+      <a href="#comandos">Comandos</a>
+      <a href="#combate">Combate</a>
+      <a href="#social">Social</a>
+      <a href="#equip">Equipamentos</a>
+      <a href="#mundo">Mundos</a>
+    </div>
+
+    <div class="box">
+      <div class="box-title">O que e REMOTE?</div>
+      <p>REMOTE e um RPG de texto via terminal onde voce controla um personagem em historias geradas por inteligencia artificial. Suas escolhas importam. Se morrer, e <strong>permadeath</strong> — precisa recomecar.</p>
+    </div>
+
+    <h2 id="basico">Como Jogar</h2>
+    <p>Voce esta em um cenario descrito por texto. Abaixo da descricao, aparecem opcoes numeradas. Digite o <strong>numero</strong> da opcao desejada ou a <strong>primeira palavra</strong> dela.</p>
+
+    <div class="box">
+      <div class="box-title">Exemplo</div>
+      <p>
+        A estrada de terra termina em uma clareira. A sua frente, a<br>
+        Taverna do Cervo Sangrento range ao vento noturno.<br><br>
+        <span class="highlight">1) Entrar na taverna</span><br>
+        <span class="highlight">2) Ignorar a taverna e seguir pela estrada</span><br><br>
+        Voce digita: <code>1</code> ou <code>entrar</code>
+      </p>
+    </div>
+
+    <p>A cada escolha, voce avanca na historia. Algumas escolhas podem ser bloqueadas por <strong>requisitos</strong> (item necessario, nivel minimo, atributo).</p>
+
+    <div class="box" style="border-color: #d7ba7d;">
+      <div class="box-title" style="color: #d7ba7d;">Importante: Enter nas escolhas</div>
+      <p><strong>Modo Aventura:</strong> Digite o numero ou palavra e pressione <strong>Enter</strong> para confirmar.</p>
+      <p><strong>Combate:</strong> Apenas digite o numero do local — a acao e imediata, sem precisar de Enter.</p>
+    </div>
+
+    <h2 id="comandos">Comandos Disponiveis</h2>
+    <table>
+      <tr><th>Comando</th><th>Alias</th><th>Descricao</th></tr>
+      <tr><td><code>&lt;numero&gt;</code></td><td>—</td><td>Escolhe a opcao numerada</td></tr>
+      <tr><td><code>&lt;palavra&gt;</code></td><td>—</td><td>Digite a primeira palavra da opcao desejada</td></tr>
+      <tr><td><code>l</code></td><td>olhar, olhe</td><td>Exibe a descricao do local novamente</td></tr>
+      <tr><td><code>st</code></td><td>status, stats</td><td>Mostra status completo do personagem</td></tr>
+      <tr><td><code>i</code></td><td>inv, inventario</td><td>Exibe os itens carregados</td></tr>
+      <tr><td><code>equip</code></td><td>e</td><td>Mostra equipamentos (arma, armadura, acessorio)</td></tr>
+      <tr><td><code>usar</code></td><td>—</td><td>Lista itens disponiveis para uso no cenario atual</td></tr>
+      <tr><td><code>menu</code></td><td>m</td><td>Abre o menu principal do jogo</td></tr>
+      <tr><td><code>hist</code></td><td>historico, log</td><td>Mostra o historico de decisoes da sessao</td></tr>
+      <tr><td><code>viajar</code></td><td>travel, dimensao</td><td>Viaja para outra dimensao (disponivel ao final de uma jornada)</td></tr>
+      <tr><td><code>recomecar</code></td><td>reset</td><td>Reinicia a jornada do zero</td></tr>
+      <tr><td><code>ajuda</code></td><td>help, ?</td><td>Exibe este manual</td></tr>
+      <tr><td><code>sair</code></td><td>quit, exit</td><td>Desconecta do jogo</td></tr>
+    </table>
+
+    <h2 id="combate">Sistema de Combate</h2>
+    <p>O combate usa o sistema <strong>3d6</strong> (igual GURPS). Voce escolhe onde atacar no inimigo. Cada local tem uma penalidade diferente na chance de acerto.</p>
+
+    <h3>Locais de Ataque</h3>
+    <table>
+      <tr><th>Local</th><th>Penalidade</th><th>Efeito</th></tr>
+      <tr><td>Tronco</td><td>0</td><td>Dano normal</td></tr>
+      <tr><td>Cabeca</td><td>-5</td><td>Dano x2, chance de atordoamento</td></tr>
+      <tr><td>Vitals</td><td>-3</td><td>Dano x3 perfurante</td></tr>
+      <tr><td>Bracos</td><td>-2</td><td>Pode desarmar o inimigo</td></tr>
+      <tr><td>Pernas</td><td>-2</td><td>Pode derrubar o inimigo</td></tr>
+    </table>
+
+    <h3>Rolagem</h3>
+    <p>O jogo rola <strong>3 dados de 6 lados (3d6)</strong> e compara com sua Habilidade ajustada pela penalidade do local:</p>
+    <ul>
+      <li><strong>Acerto:</strong> Rolagem ≤ Habilidade ajustada</li>
+      <li><strong>Critico (≤4):</strong> Acerto automatico com dano extra</li>
+      <li><strong>Fumble (≥17):</strong> Erro catastratico — voce derruba a arma</li>
+    </ul>
+
+    <h3>Timer</h3>
+    <p>A cada turno, apos seu ataque, o inimigo contra-ataca. Ha uma pausa de <strong>2 segundos</strong> simulando o tempo de reacao. Na versao web, o jogador tem <strong>15 segundos</strong> para agir antes do inimigo atacar automaticamente.</p>
+
+    <h3>Equipamentos no Combate</h3>
+    <p>A <strong>arma</strong> equipada define o dado de dano. A <strong>armadura</strong> reduz o dano recebido (DR). Atributos como <code>forca</code> e <code>agilidade</code> influenciam bonus de dano e defesa.</p>
+
+    <h2 id="social">Encontros Sociais</h2>
+    <p>Nem todo encontro e resolvido na espada. Alguns NPCs podem ser <strong>persuadidos, intimidados ou enganados</strong>. O sistema usa os atributos <code>carisma</code> e <code>persuasao</code> do seu personagem.</p>
+
+    <p>Tipos de abordagem:</p>
+    <ul>
+      <li><strong>Amigavel (0):</strong> Tom neutro, sem bonus ou penalidade</li>
+      <li><strong>Racional (-2):</strong> Usa logica e argumentos</li>
+      <li><strong>Emocional (-2):</strong> Apela para sentimentos</li>
+      <li><strong>Agressivo (-3):</strong> Intimidacao — funciona com NPCs fracos, falha com fortes</li>
+    </ul>
+
+    <h2 id="equip">Equipamentos</h2>
+    <p>Voce pode carregar itens no inventario e equipar nos slots:</p>
+    <table>
+      <tr><th>Slot</th><th>Funcão</th></tr>
+      <tr><td>Arma</td><td>Define o dano em combate (ex: 1d6+1, 2d6)</td></tr>
+      <tr><td>Armadura</td><td>Reduz o dano recebido (DR)</td></tr>
+      <tr><td>Acessorio</td><td>Bonus em atributos (carisma, persuasao, forca)</td></tr>
+    </table>
+
+    <p>Use <code>equip</code> para ver seus equipamentos atuais. Ao encontrar um item equipavel (marcado com <code>equip:</code> no jogo), ele e automaticamente equipado no slot apropriado.</p>
+
+    <h2 id="mundo">Mundos e Dimensoes</h2>
+    <p>REMOTE tem <strong>4 mundos</strong>, cada um com uma historia principal:</p>
+
+    <div class="box">
+      <div class="box-title">✦ Fantasia — O Amuleto de Sylphara</div>
+      <p>Um limpador de copos em uma taverna sonha em ser aventureiro. Quando uma briga generalizada derruba um misterioso amuleto a seus pes, ele e transportado para uma missao muito alem do que imaginava. Uma fada, um dragao, e uma verdade que pode mudar tudo.</p>
+    </div>
+
+    <div class="box">
+      <div class="box-title">✦ Sci-Fi — Leviatã</div>
+      <p>Uma nave misteriosa de proporções colossais surge no sistema solar. Explore corredores abandonados, descubra segredos alienigenas e decida o destino da humanidade em meio ao vaco frio do espaco.</p>
+    </div>
+
+    <div class="box">
+      <div class="box-title">✦ Horror — O Tempo Congelado</div>
+      <p>O mundo para. Pessoas congelam no meio dos passos. Uma nevoa densa cobre as ruas, e criaturas de pele cinzenta emergem para se alimentar. So voce pode se mover. So voce pode sobreviver e avisar a humanidade.</p>
+    </div>
+
+    <div class="box">
+      <div class="box-title">✦ Pos-Apocalipse — Projeto Cascos</div>
+      <p>Uma mulher ferida lhe entrega um selo misterioso e uma bussola apontando para o norte. A jornada atravessa desertos radioativos, canibais e um laboratorio onde a cura para a radiacao pode ser pior do que a doenca.</p>
+    </div>
+
+    <h3>Viagem entre Dimensoes</h3>
+    <p>Ao concluir uma jornada (atingir um no final), voce pode usar o comando <code>viajar</code> para migrar para outra dimensao. Seu personagem <strong>mantem nivel, itens e atributos</strong>. E a mesma alma em outro universo.</p>
+
+    <div class="box" style="border-color: #d16969;">
+      <div class="box-title" style="color: #d16969;">Permadeath</div>
+      <p>Se seu HP chegar a <strong>zero</strong>, seu personagem morre. Permanentemente. Tudo e perdido. Você pode criar um novo personagem e comecar de novo, mas a historia daquele heroi acaba.</p>
+      <p>Escolhas importam. Pense antes de agir.</p>
+    </div>
+
+    <h2 id="dicas">Dicas</h2>
+    <ul>
+      <li>Use <code>l</code> para reler a descricao do local — detalhes importantes podem passar despercebidos</li>
+      <li>Itens no inventario podem ser usados com <code>usar</code> — experimente combinar itens com o ambiente</li>
+      <li>Atributos como forca e agilidade afetam combate, carisma e persuasao afetam dialogos</li>
+      <li>Nem toda porta precisa de chave — tente arrombar, forcar ou queimar</li>
+      <li>O historico (<code>hist</code>) registra todas as suas decisoes — relembre o caminho percorrido</li>
+    </ul>
+
+    <p style="margin-top:40px; color:#555; font-size:13px; text-align:center;">
+      REMOTE Engine &mdash; 2026 &mdash; <a href="/play">Jogar</a>
+    </p>
+  </div>
+</body>
+</html>

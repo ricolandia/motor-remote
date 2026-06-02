@@ -1,0 +1,8 @@
+.git
+.gitignore
+*.md
+LICENSE
+scripts/
+data/
+db/seed.sql
+server/data/

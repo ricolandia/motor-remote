@@ -1,0 +1,17 @@
+# Database
+*.db
+*.db-shm
+*.db-wal
+
+# Build artifacts
+/tmp/remote-server
+
+# Environment
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
