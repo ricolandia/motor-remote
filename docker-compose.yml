@@ -6,10 +6,14 @@ services:
       - "2223:2222"
     volumes:
       - remote_data:/data
+      - ssh_keys:/root/.ssh
     environment:
       - DB_PATH=/data/game.db
       - STATIC_DIR=/web/static
+      - HTTP_PORT=8080
+      - SSH_PORT=2222
     restart: unless-stopped
 
 volumes:
   remote_data:
+  ssh_keys:
