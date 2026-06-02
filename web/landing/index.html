@@ -27,10 +27,27 @@
       font-size: 18px; text-decoration: none; border: 1px solid #333;
     }
     .btn-sec:hover { background: #222; }
+    .screenshots { margin: 40px 0; }
+    .screenshots h2 { color: #4ec9b0; font-size: 18px; margin-bottom: 16px; }
+    .screenshots img {
+      width: 100%; border-radius: 8px; border: 1px solid #333;
+      margin-bottom: 12px;
+    }
     .features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 40px 0; }
     .feature { background: #111; border: 1px solid #222; border-radius: 8px; padding: 20px; }
     .feature h3 { color: #d7ba7d; font-size: 14px; margin-bottom: 8px; }
     .feature p { font-size: 13px; color: #888; }
+    .credits {
+      margin-top: 48px; padding-top: 32px;
+      border-top: 1px solid #222; text-align: center;
+    }
+    .credits .author { color: #4ec9b0; font-size: 16px; font-weight: bold; }
+    .credits .role { color: #888; font-size: 13px; margin: 4px 0 16px; }
+    .credits a { color: #569cd6; text-decoration: none; font-size: 13px; }
+    .credits a:hover { text-decoration: underline; }
+    .credits .links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
+    .credits .associations { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 16px; font-size: 13px; }
+    .credits .quote { color: #888; font-style: italic; font-size: 13px; line-height: 1.6; max-width: 500px; margin: 0 auto; }
     .footer { text-align: center; padding: 20px; color: #555; font-size: 13px; }
     @media (max-width: 600px) {
       .features { grid-template-columns: 1fr; }
@@ -50,44 +67,55 @@
       Tudo no seu terminal ou navegador.
     </div>
     <a href="/play" class="btn">Jogar</a>
-    <span class="btn-sec" style="cursor:pointer;" id="btn-solicitar">Solicitar acesso</span>
-    <a href="/manual" class="btn-sec">Manual</a>
-    <a href="/assinar" class="btn-sec">Apoiar</a>
     <a href="https://github.com/ricolandia/motor-remote" class="btn-sec" target="_blank">Codigo aberto</a>
-    <div id="convite-landing" class="hidden" style="background:#111; border:1px solid #333; border-radius:8px; padding:24px; margin-top:16px;">
-      <p style="color:#aaa; line-height:1.6;">
-        As contas sao criadas por convite.<br><br>
-        Envie um e-mail para <strong style="color:#4ec9b0;">contato@rizomatico.org</strong>
-        solicitando acesso que criaremos sua conta.
-      </p>
-      <button onclick="document.getElementById('convite-landing').classList.add('hidden')" 
-        style="background:#333; color:#fff; border:none; padding:10px 20px; border-radius:4px; margin-top:16px; cursor:pointer;">Fechar</button>
+
+    <div class="screenshots">
+      <h2>✦ Capturas de Tela</h2>
+      <img src="img/motor-remote-01.png" alt="Tela inicial do REMOTE" loading="lazy">
+      <img src="img/motor-remote-02.png" alt="Combate no REMOTE" loading="lazy">
+      <img src="img/motor-remote-03.png" alt="Menu de escolhas" loading="lazy">
+      <img src="img/motor-remote-04.png" alt="Editor de historias" loading="lazy">
     </div>
-    <script>
-      document.getElementById('btn-solicitar').onclick = function(e) {
-        e.preventDefault();
-        var el = document.getElementById('convite-landing');
-        el.classList.toggle('hidden');
-      };
-    </script>
 
     <div class="features">
       <div class="feature">
-        <h3>✦ O Amuleto de Sylphara</h3>
-        <p>Fantasia — Um limpador de copos, um amuleto falante, uma fada, um dragão. Nem tudo é o que parece.</p>
+        <h3>✦ Terminal + Web</h3>
+        <p>Jogue via SSH ou navegador. A mesma experiência, duas interfaces.</p>
       </div>
       <div class="feature">
-        <h3>✦ Leviatã</h3>
-        <p>Sci-Fi — Uma nave colossal surge no sistema solar. Explore, descubra, decida o destino da humanidade.</p>
+        <h3>✦ Combate 3d6</h3>
+        <p>Sistema tático com 7 locais de ataque, crítico, fumble e iniciativa dinâmica.</p>
       </div>
       <div class="feature">
-        <h3>✦ O Tempo Congelado</h3>
-        <p>Horror — O mundo parou. Criaturas se alimentam. Só você pode se mover. Sobreviva e avise.</p>
+        <h3>✦ Auto-hospedado</h3>
+        <p>Binário único, ~10MB RAM, roda em qualquer VPS de $3. Docker e systemd inclusos.</p>
       </div>
       <div class="feature">
-        <h3>✦ Projeto Cascos</h3>
-        <p>Pós-Apocalipse — Um selo, uma bússola, um laboratório. A cura para a radiação pode ser pior que a doença.</p>
+        <h3>✦ Código Aberto</h3>
+        <p>GPL v3. Use, modifique, distribua. Construído com Go, SQLite, amor.</p>
       </div>
+    </div>
+
+    <div class="credits">
+      <p class="author">Ricardo A. B. Gra&ccedil;a</p>
+      <p class="role">Audiovisual, do roteiro &agrave; finaliza&ccedil;&atilde;o</p>
+      <div class="links">
+        <a href="https://www.ricolandia.com" target="_blank">Portfolio</a>
+        <a href="https://surtocoletivo.online" target="_blank">Filmes independentes</a>
+        <a href="https://www.rizomatico.org" target="_blank">Revista eletr&ocirc;nica</a>
+      </div>
+      <div class="associations">
+        <a href="https://www.imdb.com/name/nm1016592" target="_blank">IMDB</a>
+        <a href="https://www.abra.art.br/lista-de-associadas" target="_blank">ABRA</a>
+        <a href="https://buscatextual.cnpq.br/buscatextual/visualizacv.do?metodo=apresentar&id=K1539884T4" target="_blank">Lattes</a>
+        <a href="https://orcid.org/0009-0001-2796-9036" target="_blank">ORCID</a>
+      </div>
+      <p class="quote">
+        &ldquo;E aqueles que foram vistos dan&ccedil;ando<br>
+        foram julgados insanos por aqueles que<br>
+        n&atilde;o podiam escutar a m&uacute;sica.&rdquo;<br>
+        &mdash; Nietzsche
+      </p>
     </div>
   </div>
   <div class="footer">REMOTE Engine &mdash; 2026</div>

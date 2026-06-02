@@ -11,6 +11,8 @@ SSH:  ssh -p 2222 your-server   (terminal native)
 Web:  https://your-server:8080   (browser)
 ```
 
+<img src="img/motor-remote-01.png" alt="REMOTE Engine screenshot" width="100%">
+
 ---
 
 ## Features
