@@ -27,16 +27,18 @@
       font-size: 18px; text-decoration: none; border: 1px solid #333;
     }
     .btn-sec:hover { background: #222; }
-    .screenshots { margin: 40px 0; }
-    .screenshots h2 { color: #4ec9b0; font-size: 18px; margin-bottom: 16px; }
-    .screenshots img {
-      width: 100%; border-radius: 8px; border: 1px solid #333;
-      margin-bottom: 12px;
-    }
     .features { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 40px 0; }
     .feature { background: #111; border: 1px solid #222; border-radius: 8px; padding: 20px; }
     .feature h3 { color: #d7ba7d; font-size: 14px; margin-bottom: 8px; }
     .feature p { font-size: 13px; color: #888; }
+    .gallery { margin: 40px 0; }
+    .gallery h2 { color: #4ec9b0; font-size: 18px; margin-bottom: 16px; }
+    .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .gallery-grid img {
+      width: 100%; border-radius: 6px; border: 1px solid #333;
+      cursor: pointer; transition: border-color 0.2s;
+    }
+    .gallery-grid img:hover { border-color: #4ec9b0; }
     .credits {
       margin-top: 48px; padding-top: 32px;
       border-top: 1px solid #222; text-align: center;
@@ -48,9 +50,26 @@
     .credits .links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
     .credits .associations { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 16px; font-size: 13px; }
     .credits .quote { color: #888; font-style: italic; font-size: 13px; line-height: 1.6; max-width: 500px; margin: 0 auto; }
+    #lightbox {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.92); z-index: 999;
+      display: none; align-items: center; justify-content: center;
+      cursor: zoom-out; padding: 20px;
+    }
+    #lightbox img {
+      max-width: 95%; max-height: 95vh;
+      border-radius: 4px; box-shadow: 0 0 40px rgba(0,0,0,0.5);
+    }
+    #lightbox .close {
+      position: absolute; top: 20px; right: 30px;
+      color: #888; font-size: 36px; cursor: pointer;
+      font-family: sans-serif; line-height: 1;
+    }
+    #lightbox .close:hover { color: #fff; }
     .footer { text-align: center; padding: 20px; color: #555; font-size: 13px; }
     @media (max-width: 600px) {
       .features { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
       .logo { font-size: 36px; }
       .btn, .btn-sec { display: block; margin: 12px 0; text-align: center; }
     }
@@ -62,37 +81,26 @@
     <div class="logo">REMOTE</div>
     <div class="subtitle">RPG Interativo Multi-Universo</div>
     <div class="desc">
-      Viaje entre dimensões em uma aventura de texto com combate tático, 
-      encontros com NPCs e inteligência artificial gerando histórias infinitas.
-      Tudo no seu terminal ou navegador.
+      Motor narrativo RPG para terminal e navegador. Auto-hospedado, código aberto, sem IA em runtime.
     </div>
-    <a href="/play" class="btn">Jogar</a>
-    <a href="https://github.com/ricolandia/motor-remote" class="btn-sec" target="_blank">Codigo aberto</a>
-
-    <div class="screenshots">
-      <h2>✦ Capturas de Tela</h2>
-      <img src="img/motor-remote-01.png" alt="Tela inicial do REMOTE" loading="lazy">
-      <img src="img/motor-remote-02.png" alt="Combate no REMOTE" loading="lazy">
-      <img src="img/motor-remote-03.png" alt="Menu de escolhas" loading="lazy">
-      <img src="img/motor-remote-04.png" alt="Editor de historias" loading="lazy">
-    </div>
+    <a href="https://github.com/ricolandia/motor-remote" class="btn" target="_blank">Codigo aberto</a>
 
     <div class="features">
       <div class="feature">
         <h3>✦ Terminal + Web</h3>
-        <p>Jogue via SSH ou navegador. A mesma experiência, duas interfaces.</p>
+        <p>Jogue via SSH ou navegador. A mesma experiencia, duas interfaces.</p>
       </div>
       <div class="feature">
         <h3>✦ Combate 3d6</h3>
-        <p>Sistema tático com 7 locais de ataque, crítico, fumble e iniciativa dinâmica.</p>
+        <p>Sistema tatico com 7 locais de ataque, critico, fumble e iniciativa dinamica.</p>
       </div>
       <div class="feature">
         <h3>✦ Auto-hospedado</h3>
-        <p>Binário único, ~10MB RAM, roda em qualquer VPS de $3. Docker e systemd inclusos.</p>
+        <p>Binario unico, ~10MB RAM, roda em qualquer VPS de $3. Docker e systemd inclusos.</p>
       </div>
       <div class="feature">
-        <h3>✦ Código Aberto</h3>
-        <p>GPL v3. Use, modifique, distribua. Construído com Go, SQLite, amor.</p>
+        <h3>✦ Codigo Aberto</h3>
+        <p>GPL v3. Use, modifique, distribua. Construido com Go, SQLite, cafes artesanais.</p>
       </div>
     </div>
 
@@ -117,7 +125,36 @@
         &mdash; Nietzsche
       </p>
     </div>
+
+    <div class="gallery">
+      <h2>✦ Capturas de Tela</h2>
+      <div class="gallery-grid">
+        <img src="img/motor-remote-01.png" alt="Tela inicial do REMOTE" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="img/motor-remote-02.png" alt="Combate no REMOTE" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="img/motor-remote-03.png" alt="Menu de escolhas" loading="lazy" onclick="openLightbox(this.src)">
+        <img src="img/motor-remote-04.png" alt="Editor de historias" loading="lazy" onclick="openLightbox(this.src)">
+      </div>
+    </div>
   </div>
+
+  <div id="lightbox" onclick="closeLightbox()">
+    <span class="close">&times;</span>
+    <img id="lightbox-img" src="">
+  </div>
+
+  <script>
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').style.display = 'flex';
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').style.display = 'none';
+    }
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+
   <div class="footer">REMOTE Engine &mdash; 2026</div>
 </body>
 </html>
