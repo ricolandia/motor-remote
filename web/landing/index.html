@@ -35,7 +35,8 @@
     .gallery h2 { color: #4ec9b0; font-size: 18px; margin-bottom: 16px; }
     .gallery-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .gallery-grid img {
-      width: 100%; border-radius: 6px; border: 1px solid #333;
+      width: 100%; aspect-ratio: 16/11; object-fit: cover;
+      border-radius: 6px; border: 1px solid #333;
       cursor: pointer; transition: border-color 0.2s;
     }
     .gallery-grid img:hover { border-color: #4ec9b0; }
